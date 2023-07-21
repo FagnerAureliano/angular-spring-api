@@ -1,12 +1,12 @@
 package com.example.crudspring.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.example.crudspring.exception.RecordNotFoundException;
 import com.example.crudspring.model.Course;
 import com.example.crudspring.repository.CourseRepository;
 
@@ -28,31 +28,27 @@ public class CourseService {
         return repository.findAll();
     }
 
-    public Optional<Course> findById(@NotNull @Positive Long id) {
-        return repository.findById(id);
+    public Course findById(@NotNull @Positive Long id) {
+        return repository.findById(id).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
     public Course create(@Valid Course course) {
         return repository.save(course);
     }
 
-    public Optional<Course> update(@NotNull @Positive Long id, @Valid Course course) {
+    public Course update(@NotNull @Positive Long id, @Valid Course course) {
         return repository
                 .findById(id)
                 .map(recordFound -> {
                     recordFound.setName(course.getName());
                     recordFound.setCategory(course.getCategory());
                     return repository.save(recordFound);
-                });
+                }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
-    public boolean delete(@PathVariable @NotNull @Positive Long id) {
-        return repository
-                .findById(id)
-                .map(recordFound -> {
-                    repository.deleteById(id);
-                    return true;
-                })
-                .orElse(false);
+    public void delete(@NotNull @Positive Long id) {
+        repository.delete(
+                repository.findById(id)
+                        .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.crudspring.model.Course;
-import com.example.crudspring.repository.CourseRepository;
 import com.example.crudspring.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -47,28 +46,20 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> findById(@PathVariable(name = "id") @NotNull @Positive Long id) {
-        return service
-                .findById(id)
-                .map(recordFound -> ResponseEntity.ok().body(recordFound))
-                .orElse(ResponseEntity.notFound().build());
+    public Course findById(@PathVariable(name = "id") @NotNull @Positive Long id) {
+        return service.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> update(
+    public Course update(
             @PathVariable @NotNull @Positive Long id,
             @RequestBody @Valid Course course) {
-        return service
-                .update(id, course)
-                .map(recordFound -> ResponseEntity.ok().body(recordFound))
-                .orElse(ResponseEntity.notFound().build());
+        return service.update(id, course);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
-        if (service.delete(id)) {
-            return ResponseEntity.noContent().<Void>build();
-        }
-        return ResponseEntity.notFound().build();
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable @NotNull @Positive Long id) {
+        service.delete(id);
     }
 }
