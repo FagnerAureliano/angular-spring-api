@@ -3,7 +3,6 @@ package com.example.crudspring.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.crudspring.model.Course;
+import com.example.crudspring.dto.CourseDTO;
 import com.example.crudspring.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -31,7 +30,7 @@ public class CourseController {
     private final CourseService service;
 
     @GetMapping
-    public @ResponseBody List<Course> list() {
+    public @ResponseBody List<CourseDTO> list() {
         return service.list();
     }
 
@@ -41,19 +40,19 @@ public class CourseController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Course create(@RequestBody @Valid Course course) {
+    public CourseDTO create(@RequestBody @Valid CourseDTO course) {
         return service.create(course);
     }
 
     @GetMapping("/{id}")
-    public Course findById(@PathVariable(name = "id") @NotNull @Positive Long id) {
+    public CourseDTO findById(@PathVariable(name = "id") @NotNull @Positive Long id) {
         return service.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Course update(
+    public CourseDTO update(
             @PathVariable @NotNull @Positive Long id,
-            @RequestBody @Valid Course course) {
+            @RequestBody @NotNull @Valid CourseDTO course) {
         return service.update(id, course);
     }
 
