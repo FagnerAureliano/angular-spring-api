@@ -1,5 +1,6 @@
 package com.example.crudspring;
 
+import com.example.crudspring.enums.Category;
 import com.example.crudspring.model.Course;
 import com.example.crudspring.repository.CourseRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +22,7 @@ public class CrudSpringApplication {
             Course c = new Course();
 
             c.setName("Angular com Spring");
-            c.setCategory("Web Development");
+            c.setCategory(Category.WEB_DEVELOPMENT);
             courseRepository.save(c);
         };
     }
