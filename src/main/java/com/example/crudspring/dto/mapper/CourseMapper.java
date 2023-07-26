@@ -12,33 +12,39 @@ public class CourseMapper {
         if (course == null) {
             return null;
         }
-        return new CourseDTO(course.getId(), course.getName(), "Front-end");
+        return new CourseDTO(course.getId(), course.getName(), course.getCategory().getValue());
     }
 
     public Course toEntity(CourseDTO courseDTO) {
-
-        if (courseDTO == null) {
+        if (courseDTO == null)
             return null;
-        }
 
         /* Com @Builder */
         Course course = Course.builder()
-        .id(courseDTO.id() != null ? courseDTO.id() : null)
-        .name(courseDTO.name())
-        .category(Category.WEB_DEVELOPMENT)
-        // .status("Ativo")
-        .build();
+                .id(courseDTO.id() != null ? courseDTO.id() : null)
+                .name(courseDTO.name())
+                .category(convertCategoryValue(courseDTO.category()))
+                .build();
 
         /* Forma tradicional */
         // Course course = new Course();
         // if (courseDTO.id() != null) {
-        //     course.setId(courseDTO.id());
+        // course.setId(courseDTO.id());
         // }
         // course.setName(courseDTO.name());
         // course.setCategory(courseDTO.category());
-        // course.setStatus("Ativo"); 
 
         return course;
     }
 
+    public Category convertCategoryValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        return switch (value) {
+            case "Web Development" -> Category.WEB_DEVELOPMENT;
+            case "Mobile Development" -> Category.MOBILE_DEVELOPMENT;
+            default -> throw new IllegalArgumentException("Categoria inválida: " + value);
+        };
+    }
 }
