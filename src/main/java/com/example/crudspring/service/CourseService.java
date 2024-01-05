@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import com.example.crudspring.dto.CourseDTO;
 import com.example.crudspring.dto.mapper.CourseMapper;
 import com.example.crudspring.exception.RecordNotFoundException;
+import com.example.crudspring.model.Course;
 import com.example.crudspring.repository.CourseRepository;
 
 import jakarta.validation.Valid;
@@ -43,12 +44,19 @@ public class CourseService {
         return courseMapper.toDTO(repository.save(courseMapper.toEntity(course)));
     }
 
-    public CourseDTO update(@NotNull @Positive Long id, @Valid @NotNull CourseDTO course) {
+    public CourseDTO update(@NotNull @Positive Long id, @Valid @NotNull CourseDTO courseDTO) {
         return repository
                 .findById(id)
                 .map(recordFound -> {
-                    recordFound.setName(course.name());
-                    recordFound.setCategory(courseMapper.convertCategoryValue(course.category()));
+                    Course course = courseMapper.toEntity(courseDTO);
+                    recordFound.setName(courseDTO.name());
+                    recordFound.setCategory(courseMapper.convertCategoryValue(courseDTO.category()));
+                    //Não pode adicionar diretamente, primeiramente deve limpar a lista 
+                    // recordFound.setLessons(course.getLessons());
+
+                    recordFound.getLessons().clear();
+                    // course.getLessons().forEach(lesson -> recordFound.getLessons().add(lesson));   
+                    course.getLessons().forEach(recordFound.getLessons()::add);  // forma mais clean
                     return courseMapper.toDTO(repository.save(recordFound));
                 })
                 .orElseThrow(() -> new RecordNotFoundException(id));
